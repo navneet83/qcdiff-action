@@ -24,10 +24,13 @@ outputs:
 runs:
   using: composite
   steps:
+    - uses: actions/setup-python@v5
+      with:
+        python-version: "3.x"
     - name: Install qcdiff
       shell: bash
-      run: python3 -m pip install --quiet --disable-pip-version-check qcdiff
+      run: python -m pip install --quiet --disable-pip-version-check qcdiff
     - name: Diff circuits
       id: diff
       shell: bash
-      run: python3 "${{ github.action_path }}/runner.py" "${{ inputs.old }}" "${{ inputs.new }}" --quiet "${{ inputs.quiet }}"
+      run: python "${{ github.action_path }}/runner.py" "${{ inputs.old }}" "${{ inputs.new }}" --quiet "${{ inputs.quiet }}"
