@@ -1,0 +1,33 @@
+name: qcdiff circuit regression check
+description: Fail the job when an OpenQASM 3 circuit drifts from its reference, using a semantic gate-level diff instead of a text diff.
+branding:
+  icon: git-pull-request
+  color: purple
+
+inputs:
+  old:
+    description: Path to the reference circuit (OpenQASM 3)
+    required: true
+  new:
+    description: Path to the circuit to check against the reference (OpenQASM 3)
+    required: true
+  quiet:
+    description: Print the summary only, without the per-gate diff lines
+    required: false
+    default: "false"
+
+outputs:
+  changed:
+    description: '"true" when the circuits differ, "false" when they are identical'
+    value: ${{ steps.diff.outputs.changed }}
+
+runs:
+  using: composite
+  steps:
+    - name: Install qcdiff
+      shell: bash
+      run: python3 -m pip install --quiet --disable-pip-version-check qcdiff
+    - name: Diff circuits
+      id: diff
+      shell: bash
+      run: python3 "${{ github.action_path }}/runner.py" "${{ inputs.old }}" "${{ inputs.new }}" --quiet "${{ inputs.quiet }}"
